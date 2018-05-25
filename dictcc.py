@@ -28,8 +28,7 @@ def parse_single_tag(tag):
 
     return str_tag
 
-
-def parse_all(html):
+def parse_response(html):
     soup = BeautifulSoup(html, 'html.parser')
     data = [tag for tag in soup.find_all('td', 'td7nl')]
 
@@ -41,15 +40,25 @@ def parse_all(html):
 
     return res_from_to
 
+def parse_suggestions(html):
+    soup = BeautifulSoup(html, 'html.parser')
+    data = [tag.a.text for tag in soup.find_all('td', 'td3nl') if tag.a]
+
+    return data
+
 def main(args):
     c = request(args.word, args.prim, args.sec)
-    data = parse_all(c)
+    data = parse_response(c)
 
     for pair in data:
         print("{0[0]}\t==\t{0[1]}".format(pair))
 
     if not data:
         print(' '.join(["No translation found for:", args.word]))
+        suggestions = parse_suggestions(c)
+        print('\nHere are suggestions given by dict.cc:')
+        for s in suggestions:
+            print(" - {}".format(s))
 
     return 0
 
@@ -73,7 +82,7 @@ if __name__ == '__main__':
         print("Secondary lang must be in : [" + ", ".join(all_dict) + "]")
         exit(1)
     if args.prim == args.sec:
-        print("Languages must be different. Given : \"{}\" \"{}\"".format(args.prim, args.sec))
+        print("Given languages must be different. Given : \"{}\" and \"{}\"".format(args.prim, args.sec))
         exit(1)
 
     main(args)
