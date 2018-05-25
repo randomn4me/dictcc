@@ -1,25 +1,21 @@
 #!/usr/bin/python
-
 import sys
 import requests
+import argparse
 from bs4 import BeautifulSoup
 
-def usage(argv):
-    sys.stderr.write("Usage: %s <word>\n".format(argv[0]))
-    sys.exit(1)
-
-def request(word):
+def request(word, f, t):
     header = {'user-agent': 'Mozilla/5.0 (Windows NT 6.1; rv:31.0) Gecko/20100101 Firefox/31.0'}
     payload = {'s': word}
 
     try:
         r = requests.get(
-                "https://ende.dict.cc/",
+                "https://{}{}.dict.cc/".format(f, t),
                 headers=header,
                 params=payload)
     except Exception as exeption:
         print(e)
-        sys.exit(1)
+        exit(1)
 
     return r.content
 
@@ -44,20 +40,39 @@ def parse_all(html):
 
     return res_from_to
 
-def main(argv):
-    if not len(argv) == 2:
-        usage(argv)
-
-    c = request(argv[1])
+def main(args):
+    c = request(args.word, args.prim, args.sec)
     data = parse_all(c)
 
     for pair in data:
         print("{0[0]}\t==\t{0[1]}".format(pair))
 
     if not data:
-        print(' '.join(["No translation found for:", argv[1]]))
+        print(' '.join(["No translation found for:", args.word]))
 
     return 0
 
 if __name__ == '__main__':
-    main(sys.argv)
+    prim = ['de', 'en']
+    sec = ['bg', 'bs', 'cs', 'da', 'el', 'eo', 'es', 'fi', 'fr', 'hr',
+            'hu', 'is', 'it', 'la', 'nl', 'no', 'pl', 'pt', 'ro', 'ru', 'sk',
+            'sq', 'sr', 'sv', 'tr']
+    all_dict = prim + sec
+    parser = argparse.ArgumentParser(description='Query dict.cc for a translation.')
+    parser.add_argument('-p', '--prim', type=str, default='en', help='Primary language')
+    parser.add_argument('-s', '--sec', type=str, default='de', help='Secondary language')
+    parser.add_argument('word', type=str, help='word to translate')
+
+    args = parser.parse_args()
+
+    if not args.prim in prim:
+        print("Primary lang must be in : [" + ", ".join(prim) + "]")
+        exit(1)
+    if not args.sec in all_dict:
+        print("Secondary lang must be in : [" + ", ".join(all_dict) + "]")
+        exit(1)
+    if args.prim == args.sec:
+        print("Languages must be different. Given : \"{}\" \"{}\"".format(args.prim, args.sec))
+        exit(1)
+
+    main(args)
