@@ -3,6 +3,7 @@
 import sys
 import requests
 import argparse
+import os
 from bs4 import BeautifulSoup
 
 def request(word, f, t):
@@ -46,12 +47,19 @@ def parse_suggestions(html):
 
     return data
 
+def pretty_print(left, right, l_width, r_width):
+    print("{0:<{l_width}s} | {1:<{r_width}s}".format(left, right, l_width=l_width, r_width=r_width))
+
 def main(args):
     c = request(args.word, args.prim, args.sec)
     data = parse_response(c)
 
     for pair in data:
-        print("{0[0]}\t==\t{0[1]}".format(pair))
+        pretty_print(
+                pair[0],
+                pair[1],
+                max([len(e[0]) for e in data]),
+                max([len(e[1]) for e in data]))
 
     if not data:
         print(' '.join(["No translation found for:", args.word]))
