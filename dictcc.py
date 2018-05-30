@@ -76,7 +76,9 @@ if __name__ == '__main__':
             'hu', 'is', 'it', 'la', 'nl', 'no', 'pl', 'pt', 'ro', 'ru', 'sk',
             'sq', 'sr', 'sv', 'tr']
     all_dict = prim + sec
-    parser = argparse.ArgumentParser(description='Query dict.cc for a translation.')
+    parser = argparse.ArgumentParser(
+            description='Query dict.cc for a translation.',
+            formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument('-p', '--prim', type=str, default='en', help='Primary language')
     parser.add_argument('-s', '--sec', type=str, default='de', help='Secondary language')
     parser.add_argument('word', type=str, help='word to translate')
