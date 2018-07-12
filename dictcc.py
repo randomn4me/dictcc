@@ -1,10 +1,17 @@
 #!/usr/bin/python3
 
+# python tablulate
+
 import sys
 import requests
 import argparse
 import os
+import textwrap
+
+from tabulate import tabulate
 from bs4 import BeautifulSoup
+
+_, columns = os.popen('stty size', 'r').read().split()
 
 def request(word, f, t):
     header = {'user-agent': 'Mozilla/5.0 (Windows NT 6.1; rv:31.0) Gecko/20100101 Firefox/31.0'}
@@ -27,7 +34,7 @@ def parse_single_tag(tag):
         all_dfn = ", ".join([dfn_tag.text for dfn_tag in tag.find_all('dfn')])
         str_tag = ' '.join([str_tag, '(' + all_dfn + ')'])
 
-    return str_tag
+    return '\n   '.join(textwrap.wrap(str_tag, (int(columns) - 8) / 2))
 
 def parse_response(html):
     soup = BeautifulSoup(html, 'html.parser')
@@ -37,7 +44,7 @@ def parse_response(html):
     res_from_to = list()
 
     for f, t in raw_from_to:
-        res_from_to.append((parse_single_tag(f), parse_single_tag(t)))
+        res_from_to.append([parse_single_tag(f), parse_single_tag(t)])
 
     return res_from_to
 
@@ -47,21 +54,13 @@ def parse_suggestions(html):
 
     return data
 
-def pretty_print(left, right, l_width, r_width):
-    print("{0:<{l_width}s} | {1:<{r_width}s}".format(left, right, l_width=l_width, r_width=r_width))
-
-def main(args):
+def main(args, headers):
     c = request(args.word, args.prim, args.sec)
     data = parse_response(c)
 
-    for pair in data:
-        pretty_print(
-                pair[0],
-                pair[1],
-                max([len(e[0]) for e in data]),
-                max([len(e[1]) for e in data]))
-
-    if not data:
+    if data:
+        print(tabulate(data, headers, tablefmt='orgtbl'))
+    else:
         print(' '.join(["No translation found for:", args.word]))
         suggestions = parse_suggestions(c)
         print('\nHere are suggestions given by dict.cc:')
@@ -95,4 +94,4 @@ if __name__ == '__main__':
         print("Given languages must be different. Given : \"{}\" and \"{}\"".format(args.prim, args.sec))
         exit(1)
 
-    main(args)
+    main(args, [args.prim, args.sec])
