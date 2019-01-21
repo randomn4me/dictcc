@@ -1,7 +1,5 @@
 #!/usr/bin/python3
 
-# python tablulate
-
 import sys
 import requests
 import argparse
@@ -54,12 +52,12 @@ def parse_suggestions(html):
 
     return data
 
-def main(args, headers):
+def main(args):
     c = request(args.word, args.prim, args.sec)
     data = parse_response(c)
 
     if data:
-        print(tabulate(data, headers, tablefmt='orgtbl'))
+        print(tabulate(data, [args.prim, args.sec], tablefmt='orgtbl'))
     else:
         print(' '.join(["No translation found for:", args.word]))
         suggestions = parse_suggestions(c)
@@ -80,7 +78,7 @@ if __name__ == '__main__':
             formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument('-p', '--prim', type=str, default='en', help='Primary language')
     parser.add_argument('-s', '--sec', type=str, default='de', help='Secondary language')
-    parser.add_argument('word', type=str, help='word to translate')
+    parser.add_argument('word', help='word to translate', nargs=argparse.REMAINDER)
 
     args = parser.parse_args()
 
@@ -94,4 +92,4 @@ if __name__ == '__main__':
         print("Given languages must be different. Given : \"{}\" and \"{}\"".format(args.prim, args.sec))
         exit(1)
 
-    main(args, [args.prim, args.sec])
+    main(args)
