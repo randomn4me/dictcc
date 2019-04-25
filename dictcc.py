@@ -53,7 +53,7 @@ def parse_suggestions(html):
     return data
 
 def main(args):
-    c = request(args.word, args.prim, args.sec)
+    c = request(' '.join(args.word), args.prim, args.sec)
     data = parse_response(c)
 
     if data:
@@ -78,7 +78,7 @@ if __name__ == '__main__':
             formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument('-p', '--prim', type=str, default='en', help='Primary language')
     parser.add_argument('-s', '--sec', type=str, default='de', help='Secondary language')
-    parser.add_argument('word', help='word to translate', nargs=argparse.REMAINDER)
+    parser.add_argument('word', help='word to translate', nargs='+')
 
     args = parser.parse_args()
 
