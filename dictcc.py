@@ -53,13 +53,14 @@ def parse_suggestions(html):
     return data
 
 def main(args):
-    c = request(' '.join(args.word), args.prim, args.sec)
+    words = ' '.join(args.word)
+    c = request(words, args.prim, args.sec)
     data = parse_response(c)
 
     if data:
         print(tabulate(data, [args.prim, args.sec], tablefmt='orgtbl'))
     else:
-        print(' '.join(["No translation found for:", args.word]))
+        print(' '.join(["No translation found for:", words]))
         suggestions = parse_suggestions(c)
         print('\nHere are suggestions given by dict.cc:')
         for s in suggestions:
