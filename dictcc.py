@@ -1,7 +1,5 @@
 #!/usr/bin/python3
 
-# python tablulate
-
 import sys
 import requests
 import argparse
@@ -54,20 +52,31 @@ def parse_suggestions(html):
 
     return data
 
-def main(args, headers):
-    c = request(args.word, args.prim, args.sec)
+def handle_translation(word, primary_lang, secondary_lang):
+    c = request(word, primary_lang, secondary_lang)
     data = parse_response(c)
 
     if data:
-        print(tabulate(data, headers, tablefmt='orgtbl'))
+        print(tabulate(data, [primary_lang, secondary_lang], tablefmt='orgtbl'))
     else:
-        print(' '.join(["No translation found for:", args.word]))
+        print(' '.join(["No translation found for:", word]))
         suggestions = parse_suggestions(c)
         print('\nHere are suggestions given by dict.cc:')
         for s in suggestions:
             print(" - {}".format(s))
 
-    return 0
+def main(args):
+    if not args.console:
+        handle_translation(args.word[0], args.prim, args.sec)
+    else:
+        print('Starting console')
+        print('Enter your words for translation')
+        print('Enter q for exit')
+
+        user_input = input('>> ')
+        while user_input != 'q':
+            handle_translation(user_input, args.prim, args.sec)
+            user_input = input('>> ')
 
 if __name__ == '__main__':
     prim = ['de', 'en']
@@ -80,7 +89,8 @@ if __name__ == '__main__':
             formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument('-p', '--prim', type=str, default='en', help='Primary language')
     parser.add_argument('-s', '--sec', type=str, default='de', help='Secondary language')
-    parser.add_argument('word', type=str, help='word to translate')
+    parser.add_argument('-c', '--console', action='store_true')
+    parser.add_argument('word', nargs=argparse.REMAINDER, help='word to translate')
 
     args = parser.parse_args()
 
@@ -94,4 +104,4 @@ if __name__ == '__main__':
         print("Given languages must be different. Given : \"{}\" and \"{}\"".format(args.prim, args.sec))
         exit(1)
 
-    main(args, [args.prim, args.sec])
+    main(args)
