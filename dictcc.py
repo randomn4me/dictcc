@@ -66,9 +66,9 @@ def handle_translation(word, primary_lang, secondary_lang):
             print(" - {}".format(s))
 
 def main(args):
-    if not args.console:
+    if not args.console and args.word:
         handle_translation(args.word[0], args.prim, args.sec)
-    else:
+    elif args.console:
         print('Starting console')
         print('Enter your words for translation')
         print('Enter q for exit')
