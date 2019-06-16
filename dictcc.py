@@ -11,12 +11,14 @@ from bs4 import BeautifulSoup
 
 _, columns = os.popen('stty size', 'r').read().split()
 
+requests_session = requests.Session()
+
 def request(word, f, t):
     header = {'user-agent': 'Mozilla/5.0 (Windows NT 6.1; rv:31.0) Gecko/20100101 Firefox/31.0'}
     payload = {'s': word}
 
     try:
-        r = requests.get(
+        r = requests_session.get(
                 "https://{}{}.dict.cc/".format(f, t),
                 headers=header,
                 params=payload)
