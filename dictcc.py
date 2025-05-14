@@ -22,7 +22,7 @@ def request(word, f, t):
                 "https://{}{}.dict.cc/".format(f, t),
                 headers=header,
                 params=payload)
-    except Exception as exeption:
+    except Exception as e:
         print(e)
         exit(1)
 
