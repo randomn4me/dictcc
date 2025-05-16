@@ -34,7 +34,7 @@ def parse_single_tag(tag):
         all_dfn = ", ".join([dfn_tag.text for dfn_tag in tag.find_all('dfn')])
         str_tag = ' '.join([str_tag, '(' + all_dfn + ')'])
 
-    return '\n   '.join(textwrap.wrap(str_tag, (int(columns) - 8) / 2))
+    return '\n   '.join(textwrap.wrap(str_tag, (int(columns) - 8) // 2))
 
 def parse_response(html):
     soup = BeautifulSoup(html, 'html.parser')
