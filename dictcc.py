@@ -45,7 +45,6 @@ def parse_response(html):
     soup = BeautifulSoup(html, 'html.parser')
     data = [tag for tag in soup.find_all('td', 'td7nl')]
     words_to_show = args.max if args.max  < (len(data) // 2) else (len(data) // 2)
-    print(words_to_show)
 
     raw_from_to = zip(data[:words_to_show*2:2], data[1:words_to_show*2:2])
     res_from_to = list()
