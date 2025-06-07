@@ -30,6 +30,11 @@ def request(word, f, t):
 
 def parse_single_tag(tag):
     str_tag = " ".join([a_tag.text for a_tag in tag.find_all('a')])
+
+    if (tag.var):
+        str_type = " ".join([var_tag.text for var_tag in tag.find_all('var')])
+        str_tag = ' '.join([str_type, str_tag])
+
     if (tag.dfn):
         all_dfn = ", ".join([dfn_tag.text for dfn_tag in tag.find_all('dfn')])
         str_tag = ' '.join([str_tag, '(' + all_dfn + ')'])
