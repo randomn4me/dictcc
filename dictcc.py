@@ -44,8 +44,10 @@ def parse_single_tag(tag):
 def parse_response(html):
     soup = BeautifulSoup(html, 'html.parser')
     data = [tag for tag in soup.find_all('td', 'td7nl')]
+    words_to_show = args.max if args.max  < (len(data) // 2) else (len(data) // 2)
+    print(words_to_show)
 
-    raw_from_to = zip(data[::2], data[1::2])
+    raw_from_to = zip(data[:words_to_show*2:2], data[1:words_to_show*2:2])
     res_from_to = list()
 
     for f, t in raw_from_to:
@@ -97,6 +99,7 @@ if __name__ == '__main__':
     parser.add_argument('-p', '--prim', type=str, default='en', help='Primary language')
     parser.add_argument('-s', '--sec', type=str, default='de', help='Secondary language')
     parser.add_argument('-c', '--console', action='store_true')
+    parser.add_argument('-m', '--max', type=int, default=10, help='maximum number of results to show')
     parser.add_argument('word', nargs=argparse.REMAINDER, help='word to translate')
 
     args = parser.parse_args()
