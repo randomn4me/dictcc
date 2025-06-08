@@ -39,8 +39,9 @@ def parse_single_tag(tag):
 def parse_response(html):
     soup = BeautifulSoup(html, 'html.parser')
     data = [tag for tag in soup.find_all('td', 'td7nl')]
+    displayed_results = args.max if (args.max < len(data)//2 ) else len(data)//2
 
-    raw_from_to = zip(data[::2], data[1::2])
+    raw_from_to = zip(data[:displayed_results*2:2], data[1:displayed_results*2:2])
     res_from_to = list()
 
     for f, t in raw_from_to:
@@ -92,6 +93,7 @@ if __name__ == '__main__':
     parser.add_argument('-p', '--prim', type=str, default='en', help='Primary language')
     parser.add_argument('-s', '--sec', type=str, default='de', help='Secondary language')
     parser.add_argument('-c', '--console', action='store_true')
+    parser.add_argument('-m', '--max', type=int, default=10, help='max number of results to show')
     parser.add_argument('word', nargs=argparse.REMAINDER, help='word to translate')
 
     args = parser.parse_args()
@@ -104,6 +106,9 @@ if __name__ == '__main__':
         exit(1)
     if args.prim == args.sec:
         print("Given languages must be different. Given : \"{}\" and \"{}\"".format(args.prim, args.sec))
+        exit(1)
+    if not (args.max > 0):
+        print("maximum number of results must be greater than 0")
         exit(1)
 
     main(args)
