@@ -55,6 +55,8 @@ def parse_suggestions(html):
     return data
 
 def handle_translation(word, primary_lang, secondary_lang):
+    if (word == ""):
+        return
     c = request(word, primary_lang, secondary_lang)
     data = parse_response(c)
 
